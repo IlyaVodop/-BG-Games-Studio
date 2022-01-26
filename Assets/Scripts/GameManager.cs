@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-
+using Zenject;
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    [Inject] PauseMenu _pauseMenu;
+    [Inject] Player _player;
+    [Inject] LabyrinthCreator _labyrinthCreator;
 
     [SerializeField] private CanvasGroup loaderPause;
 
     public void OnLabyrinthGenerated()
     {
-        StartCoroutine(AlphaCoroutine(1f, 0f, loaderPause, callback: () => Player.Instance.OnGameStart()));
+        StartCoroutine(AlphaCoroutine(1f, 0f, loaderPause, callback: () => _player.OnGameStart()));
     }
     public IEnumerator AlphaCoroutine(float from, float to, CanvasGroup screen, float cooldown = 0f, Action callback = null)
     {
@@ -30,38 +32,26 @@ public class GameManager : MonoBehaviour
     }
     public void Finish()
     {
-        Player.Instance.Finish();
+        _player.Finish();
         StartCoroutine(AlphaCoroutine(0f, 1f, loaderPause, 2, ResetGame));
     }
     public void ContinueGame()
     {
-        Player.Instance.OnGameContinue();
-        PauseMenu.Instance.SetPauseState(false);
+        _player.OnGameContinue();
+        _pauseMenu.SetPauseState(false);
     }
 
 
     public void PauseGame()
     {
-        Player.Instance.OnGamePause();
-        PauseMenu.Instance.SetPauseState(true);
+        _player.OnGamePause();
+        _pauseMenu.SetPauseState(true);
     }
 
     private void ResetGame()
     {
-        Player.Instance.ResetPlayer();
-        LabyrinthCreator.Instance.GenerateLabyrinth();
+        _player.ResetPlayer();
+        _labyrinthCreator.GenerateLabyrinth();
     }
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        Instance = null;
-    }
 }

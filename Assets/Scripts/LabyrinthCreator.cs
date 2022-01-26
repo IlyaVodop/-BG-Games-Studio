@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
+using Zenject;
 
 
 public class LabyrinthCreator : MonoBehaviour
 {
-    public static LabyrinthCreator Instance;
+    [Inject] DiContainer container;
+    [Inject] GameManager _gameManager;
+
     private Vector3[] Path { get; set; }
 
     public event Action<Vector3[]> OnPathChanged;
@@ -48,7 +50,7 @@ public class LabyrinthCreator : MonoBehaviour
 
         InstantiateObject(ref finishZone, labyrinthSize - 1, labyrinthSize - 1);
 
-        GameManager.Instance.OnLabyrinthGenerated();
+        _gameManager.OnLabyrinthGenerated();
     }
 
     private void ClearLabyrinth()
@@ -201,21 +203,10 @@ public class LabyrinthCreator : MonoBehaviour
             int x = Random.Range(0, labyrinthSize);
             int y = Random.Range(x == 0 ? 1 : 0, x == labyrinthSize - 1 ? labyrinthSize - 1 : labyrinthSize);
 
-            Instantiate(deathZone, ConvertToPositionXZ(x, y), Quaternion.identity, transform);
+           // Instantiate(deathZone, ConvertToPositionXZ(x, y), Quaternion.identity, transform);
+            
+            container.InstantiatePrefab(deathZone, ConvertToPositionXZ(x, y), Quaternion.identity, transform);
         }
     }
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-
-        Instance = null;
-    }
 }

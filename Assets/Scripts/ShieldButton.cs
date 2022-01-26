@@ -2,16 +2,17 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+using Zenject;
 public class ShieldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+    [Inject] UiManager _uiManager;
     public void OnPointerDown(PointerEventData eventData)
     {
-        UiManager.Instance.PressedShieldButton();
+        _uiManager.PressedShieldButton();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        UiManager.Instance.UnPressedShieldButton();
+        _uiManager.UnPressedShieldButton();
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
-
+using Zenject;
 public class Player : MonoBehaviour
 {
-    public static Player Instance;
+    [Inject] GameManager _gameManager;
+    [Inject] LabyrinthCreator _labyrinthCreator;
 
     [SerializeField] private float speed;
     [SerializeField] private GameObject mesh;
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
-        LabyrinthCreator.Instance.OnPathChanged += OnPathChanged;
+        _labyrinthCreator.OnPathChanged += OnPathChanged;
     }
 
 
@@ -82,7 +83,7 @@ public class Player : MonoBehaviour
         var player = Instantiate(deathPlayer, transform.position, Quaternion.identity).GetComponent<Animator>();
         player.SetBool(Explode, true);
 
-        StartCoroutine(GameManager.Instance.AlphaCoroutine(0, 0, null, 0.1f, () =>
+        StartCoroutine(_gameManager.AlphaCoroutine(0, 0, null, 0.1f, () =>
         {
             mesh.SetActive(true);
             Destroy(player.gameObject);
@@ -121,15 +122,10 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         _material = mesh.GetComponent<MeshRenderer>().material;
-        if (Instance == null)
-        {
-            Instance = this;
-        }
     }
 
     private void OnDestroy()
     {
-        LabyrinthCreator.Instance.OnPathChanged -= OnPathChanged;
-        Instance = null;
+        _labyrinthCreator.OnPathChanged -= OnPathChanged;
     }
 }

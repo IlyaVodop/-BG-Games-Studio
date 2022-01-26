@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Zenject;
 public class UiManager : MonoBehaviour
 {
-    public static UiManager Instance;
+    [Inject] GameManager _gameManager;
+    [Inject] Player _player;
 
     public Coroutine _shieldTimer;
 
@@ -14,18 +15,18 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
-        PauseBtn.onClick.AddListener(GameManager.Instance.PauseGame);
-        ContinueBtn.onClick.AddListener(GameManager.Instance.ContinueGame);
+        PauseBtn.onClick.AddListener(_gameManager.PauseGame);
+        ContinueBtn.onClick.AddListener(_gameManager.ContinueGame);
     }
     public IEnumerator ShieldTimer()
     {
         yield return new WaitForSeconds(2f);
-        Player.Instance.SetInvincible(false);
+        _player.SetInvincible(false);
         _shieldTimer = null;
     }
     public void PressedShieldButton()
     {
-        Player.Instance.SetInvincible(true);
+        _player.SetInvincible(true);
         _shieldTimer = StartCoroutine(ShieldTimer());
     }
     public void UnPressedShieldButton()
@@ -33,19 +34,7 @@ public class UiManager : MonoBehaviour
         if (_shieldTimer != null)
         {
             StopCoroutine(_shieldTimer);
-            Player.Instance.SetInvincible(false);
+            _player.SetInvincible(false);
         }
-    }
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        Instance = null;
     }
 }

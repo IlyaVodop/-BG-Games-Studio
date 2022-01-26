@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-
+using Zenject;
 public class PauseMenu : MonoBehaviour
 {
-    public static PauseMenu Instance;
+    [Inject] GameManager _gameManager;
 
     private CanvasGroup _canvasGroup;
     private Coroutine _fadeAnimation;
@@ -14,7 +14,7 @@ public class PauseMenu : MonoBehaviour
 
         if (value)
         {
-            _fadeAnimation = StartCoroutine(GameManager.Instance.AlphaCoroutine(0, 1f, _canvasGroup));
+            _fadeAnimation = StartCoroutine(_gameManager.AlphaCoroutine(0, 1f, _canvasGroup));
         }
         else
         {
@@ -33,15 +33,5 @@ public class PauseMenu : MonoBehaviour
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-
-        Instance = null;
     }
 }
